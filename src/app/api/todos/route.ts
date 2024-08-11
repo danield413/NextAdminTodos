@@ -6,7 +6,7 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const take = Number(searchParams.get('take') ?? '10')
-    const skip = Number(searchParams.get('skip') ?? '10')
+    const skip = Number(searchParams.get('skip') ?? '0')
 
     if( isNaN(take) ) return NextResponse.json({message: 'Take tiene que ser un número'}, {
         status: 400
@@ -20,6 +20,8 @@ export async function GET(request: Request) {
         take,
         skip
     });
+
+    console.log(todos)
 
     return NextResponse.json(todos);
 }
@@ -45,4 +47,17 @@ export async function POST(request: Request) {
         return NextResponse.json(error, { status: 400 })
     }
 }
+
+export async function DELETE(request: Request) { 
+
+    try {
+
+        await prisma.todo.deleteMany({ where: { complete: true } });
+        return NextResponse.json('Todos los todos completados fueron eliminados');
+        
+    } catch( error ) {
+        return NextResponse.json(error, { status: 400 })
+    }
+}
+
 
